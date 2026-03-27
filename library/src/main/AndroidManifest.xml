@@ -7,7 +7,8 @@
     <application>
         <activity
             android:name=".FeedbackReportActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.Critic" />
     </application>
 
 </manifest>

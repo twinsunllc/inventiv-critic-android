@@ -1,1 +1,7 @@
-<resources></resources>
+<resources>
+    <string name="critic_feedback_title">Send Feedback</string>
+    <string name="critic_hint_description">What\'s happening?</string>
+    <string name="critic_submit">Submit</string>
+    <string name="critic_error_empty_description">Please enter a description.</string>
+    <string name="critic_error_submission_failed">Failed to submit feedback. Please try again.</string>
+</resources>
