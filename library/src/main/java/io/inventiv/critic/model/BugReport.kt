@@ -22,10 +22,3 @@ data class BugReportResponse(
     @SerialName("bug_report") val bugReport: BugReport,
 )
 
-@Serializable
-data class BugReportListResponse(
-    @SerialName("count") val count: Int,
-    @SerialName("current_page") val currentPage: Int,
-    @SerialName("total_pages") val totalPages: Int,
-    @SerialName("bug_reports") val bugReports: List<BugReport>,
-)

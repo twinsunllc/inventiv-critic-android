@@ -16,10 +16,3 @@ data class Device(
     @SerialName("updated_at") val updatedAt: String? = null,
 )
 
-@Serializable
-data class DeviceListResponse(
-    @SerialName("count") val count: Int,
-    @SerialName("current_page") val currentPage: Int,
-    @SerialName("total_pages") val totalPages: Int,
-    @SerialName("devices") val devices: List<Device>,
-)
