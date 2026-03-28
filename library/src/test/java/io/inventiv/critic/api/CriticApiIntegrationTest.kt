@@ -107,7 +107,7 @@ class CriticApiIntegrationTest {
         )
 
         // 3. Configure ApiClient to point at mock server
-        val baseUrl = server.url("/api/v3/").toString()
+        val baseUrl = server.url("/").toString().trimEnd('/')
         ApiClient.configure(baseUrl)
         val api = ApiClient.api()
 
@@ -158,7 +158,7 @@ class CriticApiIntegrationTest {
                 .setBody("""{"app_install": {"id": "uuid-123"}}""")
         )
 
-        ApiClient.configure(server.url("/api/v3/").toString())
+        ApiClient.configure(server.url("/").toString().trimEnd('/'))
         val api = ApiClient.api()
         api.ping(buildPingRequest())
 
@@ -184,7 +184,7 @@ class CriticApiIntegrationTest {
                 .setBody("""{"error": "Invalid API token"}""")
         )
 
-        ApiClient.configure(server.url("/api/v3/").toString())
+        ApiClient.configure(server.url("/").toString().trimEnd('/'))
         val api = ApiClient.api()
         val response = api.ping(buildPingRequest(apiToken = "bad-token"))
 
@@ -210,7 +210,7 @@ class CriticApiIntegrationTest {
                 )
         )
 
-        ApiClient.configure(server.url("/api/v3/").toString())
+        ApiClient.configure(server.url("/").toString().trimEnd('/'))
         val api = ApiClient.api()
 
         val parts = mutableListOf<okhttp3.MultipartBody.Part>()
