@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="md_theme_on_primary">#FFFFFF</color>
+    <color name="md_theme_on_primary_container">#21005D</color>
+    <color name="md_theme_primary">#6750A4</color>
+    <color name="md_theme_primary_container">#EADDFF</color>
+    <color name="md_theme_surface">#FFFBFE</color>
+    <string name="app_name">Critic Example</string>
+    <style name="Theme.CriticExample" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/md_theme_primary</item>
+        <item name="colorOnPrimary">@color/md_theme_on_primary</item>
+        <item name="colorPrimaryContainer">@color/md_theme_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_on_primary_container</item>
+        <item name="colorSurface">@color/md_theme_surface</item>
+    </style>
+</resources>
