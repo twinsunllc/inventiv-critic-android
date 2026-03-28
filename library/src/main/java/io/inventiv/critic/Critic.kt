@@ -261,11 +261,32 @@ object Critic {
             diskFree = externalDir.freeSpace,
             diskTotal = externalDir.totalSpace,
             diskUsable = externalDir.usableSpace,
+            memoryActive = readProcMeminfoValue("Active"),
             memoryFree = memoryInfo.availMem,
             memoryTotal = memoryInfo.totalMem,
             networkCellConnected = cellConnected,
             networkWifiConnected = wifiConnected,
         )
+    }
+
+    internal fun readProcMeminfoValue(key: String): Long? {
+        return try {
+            parseProcMeminfoValue(java.io.File("/proc/meminfo").readText(), key)
+        } catch (e: Exception) {
+            Log.w(TAG, "Could not read /proc/meminfo for key '$key': ${e.message}")
+            null
+        }
+    }
+
+    internal fun parseProcMeminfoValue(content: String, key: String): Long? {
+        return content.lineSequence()
+            .firstOrNull { it.startsWith("$key:") }
+            ?.substringAfter(":")
+            ?.trim()
+            ?.split("\\s+".toRegex())
+            ?.firstOrNull()
+            ?.toLongOrNull()
+            ?.let { it * 1024 } // /proc/meminfo reports in kB, convert to bytes
     }
 
     private suspend fun performPing() {

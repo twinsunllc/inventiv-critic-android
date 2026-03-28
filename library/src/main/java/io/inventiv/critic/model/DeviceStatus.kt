@@ -11,6 +11,7 @@ data class DeviceStatus(
     @SerialName("disk_free") val diskFree: Long? = null,
     @SerialName("disk_total") val diskTotal: Long? = null,
     @SerialName("disk_usable") val diskUsable: Long? = null,
+    @SerialName("memory_active") val memoryActive: Long? = null,
     @SerialName("memory_free") val memoryFree: Long? = null,
     @SerialName("memory_total") val memoryTotal: Long? = null,
     @SerialName("network_cell_connected") val networkCellConnected: Boolean? = null,
