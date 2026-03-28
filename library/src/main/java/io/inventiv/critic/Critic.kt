@@ -25,7 +25,10 @@ import io.inventiv.critic.api.ApiClient
 import io.inventiv.critic.model.AppInfo
 import io.inventiv.critic.model.AppVersion
 import io.inventiv.critic.model.BugReport
+import io.inventiv.critic.model.BugReportListResponse
+import io.inventiv.critic.model.Device
 import io.inventiv.critic.model.DeviceInfo
+import io.inventiv.critic.model.DeviceListResponse
 import io.inventiv.critic.model.DeviceStatus
 import io.inventiv.critic.model.PingRequest
 import io.inventiv.critic.util.Logs
@@ -127,6 +130,55 @@ object Critic {
             }
         }
         this.productMetadata = metadata
+    }
+
+    suspend fun listBugReports(
+        appApiToken: String,
+        archived: Boolean? = null,
+        deviceId: String? = null,
+        since: String? = null,
+    ): BugReportListResponse {
+        val response = withContext(Dispatchers.IO) {
+            ApiClient.api().listBugReports(appApiToken, archived, deviceId, since)
+        }
+
+        if (!response.isSuccessful) {
+            throw CriticException("listBugReports failed with response code: ${response.code()}")
+        }
+
+        return response.body()
+            ?: throw CriticException("No response returned from listBugReports.")
+    }
+
+    suspend fun getBugReport(
+        appApiToken: String,
+        id: String,
+    ): BugReport {
+        val response = withContext(Dispatchers.IO) {
+            ApiClient.api().getBugReport(id, appApiToken)
+        }
+
+        if (!response.isSuccessful) {
+            throw CriticException("getBugReport failed with response code: ${response.code()}")
+        }
+
+        return response.body()?.bugReport
+            ?: throw CriticException("No report returned from getBugReport.")
+    }
+
+    suspend fun listDevices(
+        appApiToken: String,
+    ): DeviceListResponse {
+        val response = withContext(Dispatchers.IO) {
+            ApiClient.api().listDevices(appApiToken)
+        }
+
+        if (!response.isSuccessful) {
+            throw CriticException("listDevices failed with response code: ${response.code()}")
+        }
+
+        return response.body()
+            ?: throw CriticException("No response returned from listDevices.")
     }
 
     suspend fun submitReport(

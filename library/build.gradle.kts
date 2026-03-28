@@ -2,7 +2,10 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.serialization")
+    `maven-publish`
 }
+
+val libraryVersion = "2.0.0"
 
 android {
     namespace = "io.inventiv.critic"
@@ -10,11 +13,16 @@ android {
 
     defaultConfig {
         minSdk = 24
-        targetSdk = 35
-        versionCode = 200
-        versionName = "2.0.0"
         consumerProguardFiles("proguard-rules.pro")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    testOptions {
+        targetSdk = 35
+    }
+
+    lint {
+        targetSdk = 35
     }
 
     buildTypes {
@@ -36,8 +44,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        }
     }
 }
 
@@ -86,4 +96,33 @@ tasks.register<Jar>("javadocJar") {
 artifacts {
     archives(tasks.named("sourcesJar"))
     archives(tasks.named("javadocJar"))
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("release") {
+                from(components["release"])
+
+                groupId = "io.inventiv.critic.android"
+                artifactId = "critic-android"
+                version = libraryVersion
+
+                artifact(tasks.named("sourcesJar"))
+                artifact(tasks.named("javadocJar"))
+
+                pom {
+                    name.set("Inventiv Critic Android SDK")
+                    description.set("Android SDK for building integrations with Inventiv Critic.")
+                    url.set("https://github.com/twinsunllc/inventiv-critic-android")
+                    licenses {
+                        license {
+                            name.set("MIT License")
+                            url.set("https://opensource.org/licenses/MIT")
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

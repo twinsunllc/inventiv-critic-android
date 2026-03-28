@@ -1,0 +1,6 @@
+jdk:
+  - openjdk17
+before_install:
+  - sdk-manager "platforms;android-35" "build-tools;35.0.0"
+install:
+  - ./gradlew :library:assembleRelease :library:sourcesJar :library:javadocJar

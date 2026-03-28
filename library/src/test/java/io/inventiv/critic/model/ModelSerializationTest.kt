@@ -8,7 +8,10 @@ import org.junit.Test
 
 class ModelSerializationTest {
 
-    private val json = Json { ignoreUnknownKeys = true }
+    private val json = Json {
+        ignoreUnknownKeys = true
+        encodeDefaults = true
+    }
 
     @Test
     fun `PingResponse deserializes UUID app install id`() {
