@@ -12,5 +12,5 @@ data class Attachment(
     @SerialName("file_content_type") val fileContentType: String? = null,
     @SerialName("file_file_size") val fileFileSize: Long? = null,
     @SerialName("file_updated_at") val fileUpdatedAt: String? = null,
-    @SerialName("file_url") val fileUrl: String? = null,
+    @SerialName("url") val fileUrl: String? = null,
 )

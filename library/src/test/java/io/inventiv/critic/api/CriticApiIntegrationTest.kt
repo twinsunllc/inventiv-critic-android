@@ -8,6 +8,7 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -69,8 +70,8 @@ class CriticApiIntegrationTest {
         assertEquals("POST", recorded.method)
         assertEquals("/api/v3/ping", recorded.path)
         val body = recorded.body.readUtf8()
-        assert(body.contains("\"api_token\":\"test-token\""))
-        assert(body.contains("\"platform\":\"Android\""))
+        assertTrue("api_token missing from body", body.contains("\"api_token\":\"test-token\""))
+        assertTrue("platform missing from body", body.contains("\"platform\":\"Android\""))
     }
 
     // --- List Bug Reports ---
@@ -112,10 +113,10 @@ class CriticApiIntegrationTest {
 
         val recorded = server.takeRequest()
         assertEquals("GET", recorded.method)
-        assert(recorded.path!!.contains("app_api_token=app-token-123"))
-        assert(recorded.path!!.contains("archived=true"))
-        assert(recorded.path!!.contains("device_id=device-456"))
-        assert(recorded.path!!.contains("since=2026-03-01T00%3A00%3A00Z"))
+        assertTrue("app_api_token missing from path", recorded.path!!.contains("app_api_token=app-token-123"))
+        assertTrue("archived param missing from path", recorded.path!!.contains("archived=true"))
+        assertTrue("device_id param missing from path", recorded.path!!.contains("device_id=device-456"))
+        assertTrue("since param missing from path", recorded.path!!.contains("since=2026-03-01T00%3A00%3A00Z"))
     }
 
     @Test
@@ -170,7 +171,7 @@ class CriticApiIntegrationTest {
                                     "file_file_name": "logcat.txt",
                                     "file_content_type": "text/plain",
                                     "file_file_size": 1024,
-                                    "file_url": "https://example.com/logcat.txt"
+                                    "url": "https://example.com/logcat.txt"
                                 }
                             ],
                             "device": {
@@ -268,9 +269,9 @@ class CriticApiIntegrationTest {
         assertEquals("POST", recorded.method)
         assertEquals("/api/v3/bug_reports", recorded.path)
         val body = recorded.body.readUtf8()
-        assert(body.contains("api_token"))
-        assert(body.contains("test-token"))
-        assert(body.contains("bug_report[description]"))
-        assert(body.contains("Test bug"))
+        assertTrue("api_token missing from body", body.contains("api_token"))
+        assertTrue("test-token value missing from body", body.contains("test-token"))
+        assertTrue("bug_report[description] missing from body", body.contains("bug_report[description]"))
+        assertTrue("Test bug value missing from body", body.contains("Test bug"))
     }
 }
