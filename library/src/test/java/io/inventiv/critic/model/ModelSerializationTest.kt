@@ -4,7 +4,6 @@ import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class ModelSerializationTest {
@@ -46,8 +45,8 @@ class ModelSerializationTest {
 
         val serialized = json.encodeToString(PingRequest.serializer(), request)
         assertNotNull(serialized)
-        assertTrue("api_token missing from serialized output", serialized.contains("\"api_token\":\"test-token\""))
-        assertTrue("platform missing from serialized output", serialized.contains("\"platform\":\"Android\""))
+        assert(serialized.contains("\"api_token\":\"test-token\""))
+        assert(serialized.contains("\"platform\":\"Android\""))
     }
 
     @Test
@@ -64,7 +63,7 @@ class ModelSerializationTest {
                     "file_file_name": "logcat.txt",
                     "file_content_type": "text/plain",
                     "file_file_size": 1024,
-                    "url": "https://example.com/logcat.txt"
+                    "file_url": "https://example.com/logcat.txt"
                 }
             ],
             "device": {
@@ -137,9 +136,9 @@ class ModelSerializationTest {
         )
 
         val serialized = json.encodeToString(DeviceStatus.serializer(), status)
-        assertTrue("battery_charging missing from serialized output", serialized.contains("\"battery_charging\":true"))
-        assertTrue("battery_level missing from serialized output", serialized.contains("\"battery_level\":75.0"))
-        assertTrue("disk_free missing from serialized output", serialized.contains("\"disk_free\":1000000"))
+        assert(serialized.contains("\"battery_charging\":true"))
+        assert(serialized.contains("\"battery_level\":75.0"))
+        assert(serialized.contains("\"disk_free\":1000000"))
     }
 
     @Test
@@ -171,7 +170,7 @@ class ModelSerializationTest {
             "file_content_type": "image/png",
             "file_file_size": 204800,
             "file_updated_at": "2026-03-27T10:00:00Z",
-            "url": "https://example.com/screenshot.png"
+            "file_url": "https://example.com/screenshot.png"
         }
         """.trimIndent()
 

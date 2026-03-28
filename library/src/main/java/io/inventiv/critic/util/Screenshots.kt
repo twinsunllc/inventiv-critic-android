@@ -15,10 +15,21 @@ import kotlin.coroutines.suspendCoroutine
 
 object Screenshots {
 
-    @RequiresApi(Build.VERSION_CODES.O)
     suspend fun captureActivity(activity: Activity): File {
-        val bitmap = captureView(activity)
+        val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            captureView(activity)
+        } else {
+            captureViewLegacy(activity)
+        }
         return store(bitmap, activity.cacheDir, "last_screen.png")
+    }
+
+    private fun captureViewLegacy(activity: Activity): Bitmap {
+        val view = activity.window.decorView
+        view.isDrawingCacheEnabled = true
+        val bitmap = Bitmap.createBitmap(view.drawingCache)
+        view.isDrawingCacheEnabled = false
+        return bitmap
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
