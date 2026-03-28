@@ -85,7 +85,11 @@ object Critic {
 
         context.registerActivityLifecycleCallbacks(lifecycleTracker)
         registerBatteryReceiver()
-        startShakeDetection()
+        try {
+            startShakeDetection()
+        } catch (e: Exception) {
+            Log.w(TAG, "Shake detection unavailable: ${e.message}")
+        }
 
         scope.launch {
             try {
