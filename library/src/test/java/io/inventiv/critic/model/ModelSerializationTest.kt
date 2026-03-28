@@ -100,6 +100,30 @@ class ModelSerializationTest {
     }
 
     @Test
+    fun `DeviceStatus serializes memory_active field`() {
+        val status = DeviceStatus(
+            memoryActive = 524288000L,
+            memoryFree = 104857600L,
+            memoryTotal = 4294967296L,
+        )
+
+        val serialized = json.encodeToString(DeviceStatus.serializer(), status)
+        assert(serialized.contains("\"memory_active\":524288000"))
+        assert(serialized.contains("\"memory_free\":104857600"))
+        assert(serialized.contains("\"memory_total\":4294967296"))
+    }
+
+    @Test
+    fun `DeviceStatus memory_active defaults to null when not provided`() {
+        val status = DeviceStatus(
+            memoryFree = 104857600L,
+            memoryTotal = 4294967296L,
+        )
+
+        assertNull(status.memoryActive)
+    }
+
+    @Test
     fun `BugReport handles missing optional fields`() {
         val raw = """{"id": "test-uuid"}"""
         val report = json.decodeFromString<BugReport>(raw)
