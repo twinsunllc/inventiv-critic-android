@@ -82,22 +82,16 @@
             android:textAppearance="?attr/textAppearanceTitleMedium"
             android:layout_marginBottom="8dp" />
 
-        <com.google.android.material.textfield.TextInputLayout
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/textStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/textStatus"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minLines="6"
-                android:gravity="top"
-                android:inputType="textMultiLine"
-                android:editable="false"
-                android:focusable="false"
-                android:text="Ready. Enter your API token and tap Initialize." />
-        </com.google.android.material.textfield.TextInputLayout>
+            android:minLines="6"
+            android:gravity="top"
+            android:padding="16dp"
+            android:background="@drawable/status_background"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:text="Ready. Enter your API token and tap Initialize." />
 
     </LinearLayout>
 </ScrollView>

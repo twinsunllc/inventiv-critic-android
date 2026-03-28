@@ -1,6 +1,7 @@
 package io.inventiv.critic.example
 
 import android.os.Bundle
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import io.inventiv.critic.Critic
@@ -24,7 +25,15 @@ class MainActivity : AppCompatActivity() {
         binding.btnShowFeedback.setOnClickListener { onShowFeedback() }
     }
 
+    private fun hideKeyboard() {
+        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        currentFocus?.let { imm.hideSoftInputFromWindow(it.windowToken, 0) }
+        binding.editApiToken.clearFocus()
+        binding.editBaseUrl.clearFocus()
+    }
+
     private fun onInitialize() {
+        hideKeyboard()
         val apiToken = binding.editApiToken.text?.toString()?.trim().orEmpty()
         val baseUrl = binding.editBaseUrl.text?.toString()?.trim().orEmpty()
 
@@ -57,6 +66,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onSubmitReport() {
+        hideKeyboard()
         if (!Critic.isInitialized) {
             appendStatus("Error: Critic is not initialized.")
             return
@@ -97,6 +107,6 @@ class MainActivity : AppCompatActivity() {
         } else {
             "$current\n[$timestamp] $message"
         }
-        binding.textStatus.setText(updated)
+        binding.textStatus.text = updated
     }
 }
