@@ -186,7 +186,7 @@ object Critic {
             throw CriticException("Invalid response code: ${response.code()}")
         }
 
-        return response.body()?.bugReport
+        return response.body()
             ?: throw CriticException("No report returned from server.")
     }
 

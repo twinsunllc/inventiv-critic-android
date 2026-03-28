@@ -17,8 +17,3 @@ data class BugReport(
     @SerialName("app") val app: App? = null,
 )
 
-@Serializable
-data class BugReportResponse(
-    @SerialName("bug_report") val bugReport: BugReport,
-)
-

@@ -110,11 +110,11 @@ class ModelSerializationTest {
     }
 
     @Test
-    fun `BugReportResponse wraps bug report correctly`() {
-        val raw = """{"bug_report": {"id": "uuid-123", "description": "Test"}}"""
-        val response = json.decodeFromString<BugReportResponse>(raw)
-        assertEquals("uuid-123", response.bugReport.id)
-        assertEquals("Test", response.bugReport.description)
+    fun `BugReport deserializes flat response from v3 API`() {
+        val raw = """{"id": "uuid-123", "description": "Test", "attachments": []}"""
+        val report = json.decodeFromString<BugReport>(raw)
+        assertEquals("uuid-123", report.id)
+        assertEquals("Test", report.description)
     }
 
     @Test

@@ -1,6 +1,6 @@
 package io.inventiv.critic.api
 
-import io.inventiv.critic.model.BugReportResponse
+import io.inventiv.critic.model.BugReport
 import io.inventiv.critic.model.PingRequest
 import io.inventiv.critic.model.PingResponse
 import okhttp3.MultipartBody
@@ -19,5 +19,5 @@ interface CriticApi {
     @POST("bug_reports")
     suspend fun createBugReport(
         @Part parts: List<MultipartBody.Part>,
-    ): Response<BugReportResponse>
+    ): Response<BugReport>
 }
