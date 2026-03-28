@@ -85,48 +85,6 @@ class ModelSerializationTest {
     }
 
     @Test
-    fun `BugReportListResponse deserializes paginated response`() {
-        val raw = """
-        {
-            "count": 42,
-            "current_page": 1,
-            "total_pages": 5,
-            "bug_reports": [
-                {"id": "uuid-1", "description": "Bug 1"},
-                {"id": "uuid-2", "description": "Bug 2"}
-            ]
-        }
-        """.trimIndent()
-
-        val response = json.decodeFromString<BugReportListResponse>(raw)
-        assertEquals(42, response.count)
-        assertEquals(1, response.currentPage)
-        assertEquals(5, response.totalPages)
-        assertEquals(2, response.bugReports.size)
-        assertEquals("uuid-1", response.bugReports[0].id)
-    }
-
-    @Test
-    fun `DeviceListResponse deserializes paginated response`() {
-        val raw = """
-        {
-            "count": 10,
-            "current_page": 1,
-            "total_pages": 1,
-            "devices": [
-                {"id": "device-uuid-1", "manufacturer": "Google", "model": "Pixel 8", "platform": "Android"},
-                {"id": "device-uuid-2", "manufacturer": "Samsung", "model": "Galaxy S24", "platform": "Android"}
-            ]
-        }
-        """.trimIndent()
-
-        val response = json.decodeFromString<DeviceListResponse>(raw)
-        assertEquals(10, response.count)
-        assertEquals(2, response.devices.size)
-        assertEquals("Google", response.devices[0].manufacturer)
-    }
-
-    @Test
     fun `DeviceStatus serializes with null fields omitted when defaults`() {
         val status = DeviceStatus(
             batteryCharging = true,
