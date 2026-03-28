@@ -2,6 +2,8 @@ package io.inventiv.critic.api
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNotSame
+import org.junit.Assert.assertSame
 import org.junit.Test
 
 class ApiClientTest {
@@ -23,7 +25,7 @@ class ApiClientTest {
         ApiClient.configure()
         val api1 = ApiClient.api()
         val api2 = ApiClient.api()
-        assert(api1 === api2)
+        assertSame("api() should return the same instance", api1, api2)
     }
 
     @Test
@@ -32,6 +34,6 @@ class ApiClientTest {
         val api1 = ApiClient.api()
         ApiClient.configure("https://custom.example.com/api/v3/")
         val api2 = ApiClient.api()
-        assert(api1 !== api2)
+        assertNotSame("configure should reset cached api instance", api1, api2)
     }
 }
