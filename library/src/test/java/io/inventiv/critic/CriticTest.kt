@@ -43,10 +43,11 @@ class CriticTest {
 
     @Test
     fun `parseProcMeminfoValue does not match partial key names`() {
-        // "Active" should not match "Active(anon)" line
-        val result = Critic.parseProcMeminfoValue(sampleMeminfo, "Active")
-        // Should match "Active:" line specifically: 5120000 kB
-        assertEquals(5242880000L, result)
+        // Content has only "Active(anon):" — no "Active:" line
+        // Searching for "Active" must return null because "Active(anon)" is not a prefix match for "Active:"
+        val content = "Active(anon): 3072000 kB\n"
+        val result = Critic.parseProcMeminfoValue(content, "Active")
+        assertNull(result)
     }
 
     @Test
