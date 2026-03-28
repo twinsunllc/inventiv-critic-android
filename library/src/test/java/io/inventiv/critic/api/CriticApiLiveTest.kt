@@ -17,33 +17,40 @@ import java.net.URL
 /**
  * Live integration test that runs against a REAL Critic instance.
  *
- * Skipped automatically when the server is not reachable.
+ * Skipped automatically when the required environment variables are not set
+ * or when the server is not reachable.
  *
  * Configuration (via environment variables or system properties):
- *   CRITIC_BASE_URL  - defaults to http://localhost:8000/api/v3/
- *   CRITIC_API_TOKEN - defaults to puZh4G2f1j9jwFSDrPus2ZtN
+ *   CRITIC_BASE_URL  - e.g. https://your-critic-instance.example.com/api/v3/
+ *   CRITIC_API_TOKEN - e.g. your-api-token
  *
  * Run manually:
  *   ./gradlew :library:test --tests "*.CriticApiLiveTest" \
- *       -DCRITIC_BASE_URL=http://localhost:8000/api/v3/ \
- *       -DCRITIC_API_TOKEN=puZh4G2f1j9jwFSDrPus2ZtN
+ *       -DCRITIC_BASE_URL=https://your-critic-instance.example.com/api/v3/ \
+ *       -DCRITIC_API_TOKEN=your-api-token
  */
 class CriticApiLiveTest {
 
-    private val baseUrl: String =
+    private val baseUrl: String? =
         System.getProperty("CRITIC_BASE_URL")
             ?: System.getenv("CRITIC_BASE_URL")
-            ?: "http://localhost:8000/api/v3/"
 
-    private val apiToken: String =
+    private val apiToken: String? =
         System.getProperty("CRITIC_API_TOKEN")
             ?: System.getenv("CRITIC_API_TOKEN")
-            ?: "puZh4G2f1j9jwFSDrPus2ZtN"
 
     @Before
-    fun checkServerAvailable() {
+    fun checkEnvironmentAndServer() {
+        assumeTrue(
+            "Skipping live test: CRITIC_BASE_URL not set",
+            !baseUrl.isNullOrBlank()
+        )
+        assumeTrue(
+            "Skipping live test: CRITIC_API_TOKEN not set",
+            !apiToken.isNullOrBlank()
+        )
         val reachable = try {
-            val url = URL(baseUrl.trimEnd('/') + "/ping")
+            val url = URL(baseUrl!!.trimEnd('/') + "/ping")
             val connection = url.openConnection() as HttpURLConnection
             connection.connectTimeout = 2000
             connection.readTimeout = 2000
@@ -61,11 +68,11 @@ class CriticApiLiveTest {
 
     @Test
     fun `ping against live server returns app install id`() = runTest {
-        ApiClient.configure(baseUrl)
+        ApiClient.configure(baseUrl!!)
         val api = ApiClient.api()
 
         val request = PingRequest(
-            apiToken = apiToken,
+            apiToken = apiToken!!,
             app = AppInfo(
                 name = "CriticAndroidSDK-Test",
                 packageName = "io.inventiv.critic.test",
@@ -94,12 +101,12 @@ class CriticApiLiveTest {
 
     @Test
     fun `submit bug report against live server`() = runTest {
-        ApiClient.configure(baseUrl)
+        ApiClient.configure(baseUrl!!)
         val api = ApiClient.api()
 
         // Step 1: Ping to get app_install id
         val pingRequest = PingRequest(
-            apiToken = apiToken,
+            apiToken = apiToken!!,
             app = AppInfo(
                 name = "CriticAndroidSDK-Test",
                 packageName = "io.inventiv.critic.test",
@@ -121,7 +128,7 @@ class CriticApiLiveTest {
 
         // Step 2: Submit a bug report
         val parts = mutableListOf<okhttp3.MultipartBody.Part>()
-        parts += okhttp3.MultipartBody.Part.createFormData("api_token", apiToken)
+        parts += okhttp3.MultipartBody.Part.createFormData("api_token", apiToken!!)
         parts += okhttp3.MultipartBody.Part.createFormData("app_install[id]", appInstallId)
         parts += okhttp3.MultipartBody.Part.createFormData(
             "bug_report[description]",

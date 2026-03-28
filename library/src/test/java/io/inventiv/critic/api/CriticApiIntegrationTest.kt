@@ -24,8 +24,8 @@ import org.junit.Test
  *
  * Uses MockWebServer so no real server is needed.
  *
- * To run against a REAL local Critic instance instead, see
- * [CriticApiLiveTest] (requires a running server at localhost:8000).
+ * To run against a REAL Critic instance instead, see
+ * [CriticApiLiveTest] (requires CRITIC_BASE_URL and CRITIC_API_TOKEN env vars).
  */
 class CriticApiIntegrationTest {
 
