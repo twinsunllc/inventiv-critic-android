@@ -4,6 +4,7 @@ import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class ModelSerializationTest {
@@ -45,8 +46,8 @@ class ModelSerializationTest {
 
         val serialized = json.encodeToString(PingRequest.serializer(), request)
         assertNotNull(serialized)
-        assert(serialized.contains("\"api_token\":\"test-token\""))
-        assert(serialized.contains("\"platform\":\"Android\""))
+        assertTrue("Should contain api_token", serialized.contains("\"api_token\":\"test-token\""))
+        assertTrue("Should contain platform Android", serialized.contains("\"platform\":\"Android\""))
     }
 
     @Test
@@ -94,9 +95,9 @@ class ModelSerializationTest {
         )
 
         val serialized = json.encodeToString(DeviceStatus.serializer(), status)
-        assert(serialized.contains("\"battery_charging\":true"))
-        assert(serialized.contains("\"battery_level\":75.0"))
-        assert(serialized.contains("\"disk_free\":1000000"))
+        assertTrue("Should contain battery_charging", serialized.contains("\"battery_charging\":true"))
+        assertTrue("Should contain battery_level", serialized.contains("\"battery_level\":75.0"))
+        assertTrue("Should contain disk_free", serialized.contains("\"disk_free\":1000000"))
     }
 
     @Test
