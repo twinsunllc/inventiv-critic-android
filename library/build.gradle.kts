@@ -2,6 +2,8 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.serialization")
+    id("maven-publish")
+    id("signing")
 }
 
 android {
@@ -91,4 +93,85 @@ tasks.register<Jar>("javadocJar") {
 artifacts {
     archives(tasks.named("sourcesJar"))
     archives(tasks.named("javadocJar"))
+}
+
+// ---------------------------------------------------------------------------
+// Maven publishing (Maven Central via Sonatype OSSRH)
+// ---------------------------------------------------------------------------
+
+val libVersion: String = project.findProperty("VERSION_NAME") as String? ?: "2.0.0"
+val libGroup: String = project.findProperty("GROUP") as String? ?: "io.inventiv.critic.android"
+val libArtifactId: String = project.findProperty("POM_ARTIFACT_ID") as String? ?: "critic-android"
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("release") {
+                groupId = libGroup
+                artifactId = libArtifactId
+                version = libVersion
+
+                from(components["release"])
+
+                artifact(tasks["sourcesJar"])
+                artifact(tasks["javadocJar"])
+
+                pom {
+                    name.set("Inventiv Critic Android Library")
+                    description.set("Android library for building integrations with Inventiv Critic.")
+                    url.set("https://github.com/twinsunllc/inventiv-critic-android")
+                    inceptionYear.set("2018")
+
+                    licenses {
+                        license {
+                            name.set("MIT License")
+                            url.set("https://opensource.org/licenses/MIT")
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id.set("inventiv")
+                            name.set("Inventiv")
+                            url.set("https://inventiv.io/")
+                        }
+                    }
+
+                    scm {
+                        connection.set("scm:git:git://github.com/twinsunllc/inventiv-critic-android.git")
+                        developerConnection.set("scm:git:ssh://github.com/twinsunllc/inventiv-critic-android.git")
+                        url.set("https://github.com/twinsunllc/inventiv-critic-android")
+                    }
+                }
+            }
+        }
+
+        repositories {
+            maven {
+                name = "MavenCentral"
+                val isSnapshot = libVersion.endsWith("SNAPSHOT")
+                url = uri(
+                    if (isSnapshot)
+                        "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+                    else
+                        "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+                )
+                credentials {
+                    username = System.getenv("OSSRH_USERNAME")
+                        ?: project.findProperty("ossrhUsername") as String?
+                    password = System.getenv("OSSRH_PASSWORD")
+                        ?: project.findProperty("ossrhPassword") as String?
+                }
+            }
+        }
+    }
+
+    signing {
+        val signingKey: String? = System.getenv("GPG_SIGNING_KEY")
+        val signingPassword: String? = System.getenv("GPG_SIGNING_PASSWORD")
+        if (signingKey != null && signingPassword != null) {
+            useInMemoryPgpKeys(signingKey, signingPassword)
+            sign(publishing.publications["release"])
+        }
+    }
 }

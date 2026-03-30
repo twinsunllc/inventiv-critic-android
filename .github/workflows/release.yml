@@ -1,0 +1,131 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to release (e.g. v2.0.0)"
+        required: true
+        type: string
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+permissions:
+  contents: write  # required to create GitHub Releases and upload assets
+
+jobs:
+  release:
+    name: Build, Test & Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  # v6.0.1
+        with:
+          fetch-depth: 0  # full history so changelog extraction works
+
+      - uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00  # v4.7.1
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@94baf225fe0a508e581a564467443d0e2379123b  # v4.3.0
+        with:
+          gradle-version: "8.13"
+
+      # -----------------------------------------------------------------------
+      # Build & test
+      # -----------------------------------------------------------------------
+      - name: Build library
+        run: gradle :library:assembleRelease
+
+      - name: Run unit tests
+        run: gradle :library:test
+
+      # -----------------------------------------------------------------------
+      # Collect artifacts
+      # -----------------------------------------------------------------------
+      - name: Locate AAR
+        id: aar
+        run: |
+          AAR=$(find library/build/outputs/aar -name "*-release.aar" | head -1)
+          echo "path=$AAR" >> "$GITHUB_OUTPUT"
+          echo "name=$(basename "$AAR")" >> "$GITHUB_OUTPUT"
+
+      - name: Build sources JAR
+        run: gradle :library:sourcesJar
+
+      - name: Build javadoc JAR
+        run: gradle :library:javadocJar
+
+      # -----------------------------------------------------------------------
+      # Extract changelog notes for this release
+      # -----------------------------------------------------------------------
+      - name: Extract changelog notes
+        id: changelog
+        shell: bash
+        run: |
+          # Determine the version from the tag (strip leading 'v')
+          TAG="${{ github.ref_name }}"
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            TAG="${{ github.event.inputs.tag }}"
+          fi
+          VERSION="${TAG#v}"
+
+          # Extract the block between ## [VERSION] and the next ## [
+          NOTES=$(awk "/^## \[${VERSION}\]/{found=1; next} found && /^## \[/{exit} found{print}" CHANGELOG.md)
+
+          # Make the notes safe for use in the GitHub output
+          {
+            echo "notes<<CHANGELOG_EOF"
+            echo "$NOTES"
+            echo "CHANGELOG_EOF"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      # -----------------------------------------------------------------------
+      # Upload build artifacts (available to download from the workflow run)
+      # -----------------------------------------------------------------------
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f  # v6.0.0
+        with:
+          name: critic-android-${{ steps.changelog.outputs.version }}
+          path: |
+            ${{ steps.aar.outputs.path }}
+            library/build/libs/*.jar
+          retention-days: 90
+
+      # -----------------------------------------------------------------------
+      # Create GitHub Release and attach artifacts
+      # -----------------------------------------------------------------------
+      - name: Create GitHub Release
+        id: gh_release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.changelog.outputs.tag }}
+          name: "Critic Android SDK ${{ steps.changelog.outputs.version }}"
+          body: ${{ steps.changelog.outputs.notes }}
+          draft: false
+          prerelease: false
+          files: |
+            ${{ steps.aar.outputs.path }}
+            library/build/libs/*.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # -----------------------------------------------------------------------
+      # Publish to Maven Central (Sonatype OSSRH)
+      # Requires OSSRH_USERNAME, OSSRH_PASSWORD, GPG_SIGNING_KEY,
+      # and GPG_SIGNING_PASSWORD to be configured as repository secrets.
+      # -----------------------------------------------------------------------
+      - name: Publish to Maven Central
+        if: ${{ secrets.OSSRH_USERNAME != '' && secrets.OSSRH_PASSWORD != '' && secrets.GPG_SIGNING_KEY != '' }}
+        run: gradle :library:publishReleasePublicationToMavenCentralRepository
+        env:
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
+          GPG_SIGNING_PASSWORD: ${{ secrets.GPG_SIGNING_PASSWORD }}
