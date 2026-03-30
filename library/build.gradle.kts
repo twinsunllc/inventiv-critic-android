@@ -170,7 +170,7 @@ afterEvaluate {
             // the release workflow. No credentials or GPG signing required.
             maven {
                 name = "S3Maven"
-                url = uri("${rootProject.buildDir}/repo")
+                url = uri(rootProject.layout.buildDirectory.get().asFile.resolve("repo"))
             }
         }
     }

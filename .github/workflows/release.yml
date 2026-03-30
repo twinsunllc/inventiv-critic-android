@@ -137,11 +137,13 @@ jobs:
       # No GPG signing is required for this self-hosted S3 repo.
       # -----------------------------------------------------------------------
       - name: Publish to local Maven repo directory
+        if: ${{ secrets.AWS_ACCESS_KEY_ID != '' && secrets.AWS_SECRET_ACCESS_KEY != '' }}
         run: gradle :library:publishReleasePublicationToS3MavenRepository
 
       - name: Sync to S3 Maven repo
+        if: ${{ secrets.AWS_ACCESS_KEY_ID != '' && secrets.AWS_SECRET_ACCESS_KEY != '' }}
         run: |
-          aws s3 sync build/repo/ s3://repo.inventiv.io/ --acl public-read
+          aws s3 sync build/repo/ s3://repo.inventiv.io/
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
