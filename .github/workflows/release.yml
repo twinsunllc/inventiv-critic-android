@@ -129,3 +129,20 @@ jobs:
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
           GPG_SIGNING_PASSWORD: ${{ secrets.GPG_SIGNING_PASSWORD }}
+
+      # -----------------------------------------------------------------------
+      # Publish to S3 Maven repo (repo.inventiv.io)
+      # Publishes to a local directory first, then syncs to S3.
+      # Requires AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY repository secrets.
+      # No GPG signing is required for this self-hosted S3 repo.
+      # -----------------------------------------------------------------------
+      - name: Publish to local Maven repo directory
+        run: gradle :library:publishReleasePublicationToS3MavenRepository
+
+      - name: Sync to S3 Maven repo
+        run: |
+          aws s3 sync build/repo/ s3://repo.inventiv.io/ --acl public-read
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
