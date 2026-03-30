@@ -1,4 +1,4 @@
-name: CI
+name: Nightly Security
 
 on:
   push:
@@ -9,6 +9,9 @@ on:
     # Nightly at 1 AM Central (6 AM UTC)
     - cron: "0 6 * * *"
   workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 permissions:
   contents: read
@@ -58,7 +61,7 @@ jobs:
           distribution: temurin
           java-version: 17
       - name: Run OWASP Dependency-Check
-        uses: dependency-check/Dependency-Check_Action@6a1ec9fa55d34111e0e01bf1e3bd29a1e2a86ac9  # v1.1.0
+        uses: dependency-check/Dependency-Check_Action@75ba02d6183445fe0761d26e836bde58b1560600  # v1.1.0
         with:
           project: inventiv-critic-android
           path: .
