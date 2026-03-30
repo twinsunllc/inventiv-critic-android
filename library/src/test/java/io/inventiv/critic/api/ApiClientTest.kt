@@ -2,13 +2,15 @@ package io.inventiv.critic.api
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNotSame
+import org.junit.Assert.assertSame
 import org.junit.Test
 
 class ApiClientTest {
 
     @Test
-    fun `default base URL points to v3 API`() {
-        assertEquals("https://critic.inventiv.io/api/v3/", ApiClient.DEFAULT_BASE_URL)
+    fun `default host points to critic`() {
+        assertEquals("https://critic.inventiv.io", ApiClient.DEFAULT_HOST)
     }
 
     @Test
@@ -23,15 +25,15 @@ class ApiClientTest {
         ApiClient.configure()
         val api1 = ApiClient.api()
         val api2 = ApiClient.api()
-        assert(api1 === api2)
+        assertSame("Repeated calls should return same instance", api1, api2)
     }
 
     @Test
-    fun `configure with custom URL resets cached api`() {
+    fun `configure with custom host resets cached api`() {
         ApiClient.configure()
         val api1 = ApiClient.api()
-        ApiClient.configure("https://custom.example.com/api/v3/")
+        ApiClient.configure("https://custom.example.com")
         val api2 = ApiClient.api()
-        assert(api1 !== api2)
+        assertNotSame("Reconfigure should create new instance", api1, api2)
     }
 }

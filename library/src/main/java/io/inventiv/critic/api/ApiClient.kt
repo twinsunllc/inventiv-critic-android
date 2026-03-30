@@ -8,10 +8,11 @@ import retrofit2.converter.kotlinx.serialization.asConverterFactory
 
 object ApiClient {
 
-    const val DEFAULT_BASE_URL = "https://critic.inventiv.io/api/v3/"
+    const val DEFAULT_HOST = "https://critic.inventiv.io"
+    private const val API_PATH = "/api/v3/"
     private const val USER_AGENT = "Inventiv-Android-Client"
 
-    private var baseUrl: String = DEFAULT_BASE_URL
+    private var host: String = DEFAULT_HOST
     private var api: CriticApi? = null
 
     private val json = Json {
@@ -19,8 +20,8 @@ object ApiClient {
         encodeDefaults = true
     }
 
-    fun configure(baseUrl: String = DEFAULT_BASE_URL) {
-        this.baseUrl = baseUrl
+    fun configure(host: String = DEFAULT_HOST) {
+        this.host = host.trimEnd('/')
         this.api = null
     }
 
@@ -37,7 +38,7 @@ object ApiClient {
         val contentType = "application/json".toMediaType()
 
         val retrofit = Retrofit.Builder()
-            .baseUrl(baseUrl)
+            .baseUrl("$host$API_PATH")
             .client(client)
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()

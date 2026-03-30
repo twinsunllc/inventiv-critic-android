@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "inventiv-critic-android"
 include(":library")
+include(":example")

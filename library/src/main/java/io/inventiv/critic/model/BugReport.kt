@@ -2,6 +2,7 @@ package io.inventiv.critic.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonElement
 
 @Serializable
 data class BugReport(
@@ -11,14 +12,9 @@ data class BugReport(
     @SerialName("user_identifier") val userIdentifier: String? = null,
     @SerialName("created_at") val createdAt: String? = null,
     @SerialName("updated_at") val updatedAt: String? = null,
-    @SerialName("metadata") val metadata: String? = null,
+    @SerialName("metadata") val metadata: JsonElement? = null,
     @SerialName("attachments") val attachments: List<Attachment>? = null,
     @SerialName("device") val device: Device? = null,
     @SerialName("app") val app: App? = null,
-)
-
-@Serializable
-data class BugReportResponse(
-    @SerialName("bug_report") val bugReport: BugReport,
 )
 
