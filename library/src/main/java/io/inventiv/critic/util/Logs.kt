@@ -5,7 +5,6 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
 import java.util.Calendar
-import java.util.TimeZone
 
 object Logs {
 
@@ -26,17 +25,18 @@ object Logs {
         val match = THREADTIME_REGEX.matchEntire(line) ?: return line
         val (monthDay, time, levelChar, tagAndMessage) = match.destructured
         val level = LEVEL_MAP[levelChar.first()] ?: levelChar
-        val isoTimestamp = "${year}-${monthDay.replace('-', '-')}T${time}Z"
+        val isoTimestamp = "${year}-${monthDay}T${time}Z"
         return "[$isoTimestamp] $level: $tagAndMessage"
     }
 
     fun readLogcat(context: Context): File? {
-        val currentYear = Calendar.getInstance(TimeZone.getTimeZone("UTC")).get(Calendar.YEAR)
+        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
 
         val process = Runtime.getRuntime().exec(
             arrayOf("logcat", "--pid=${android.os.Process.myPid()}", "-t", "500", "-v", "threadtime")
         )
-        val file = File(context.externalCacheDir, "console-logs.txt")
+        val cacheDir = context.externalCacheDir ?: return null
+        val file = File(cacheDir, "console-logs.txt")
 
         file.outputStream().buffered().use { out ->
             BufferedReader(InputStreamReader(process.inputStream)).use { reader ->
