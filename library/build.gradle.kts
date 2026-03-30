@@ -38,6 +38,13 @@ android {
         viewBinding = true
     }
 
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -71,30 +78,6 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
 }
 
-// build a jar with source files
-tasks.register<Jar>("sourcesJar") {
-    from(android.sourceSets["main"].java.srcDirs)
-    archiveClassifier.set("sources")
-}
-
-tasks.register<Javadoc>("javadocTask") {
-    isFailOnError = false
-    source = android.sourceSets["main"].java.getSourceFiles()
-    classpath += project.files(android.bootClasspath)
-}
-
-// build a jar with javadoc
-tasks.register<Jar>("javadocJar") {
-    dependsOn("javadocTask")
-    archiveClassifier.set("javadoc")
-    from(tasks.named<Javadoc>("javadocTask").get().destinationDir)
-}
-
-artifacts {
-    archives(tasks.named("sourcesJar"))
-    archives(tasks.named("javadocJar"))
-}
-
 // ---------------------------------------------------------------------------
 // Maven publishing
 // - MavenCentral: Sonatype OSSRH (requires GPG signing)
@@ -106,11 +89,6 @@ val libGroup: String = project.findProperty("GROUP") as String? ?: "io.inventiv.
 val libArtifactId: String = project.findProperty("POM_ARTIFACT_ID") as String? ?: "inventiv-critic-android"
 
 afterEvaluate {
-    tasks.withType<GenerateModuleMetadata> {
-        dependsOn(tasks.named("sourcesJar"))
-        dependsOn(tasks.named("javadocJar"))
-    }
-
     publishing {
         publications {
             create<MavenPublication>("release") {
@@ -119,9 +97,6 @@ afterEvaluate {
                 version = libVersion
 
                 from(components["release"])
-
-                artifact(tasks["sourcesJar"])
-                artifact(tasks["javadocJar"])
 
                 pom {
                     name.set("Inventiv Critic Android Library")
