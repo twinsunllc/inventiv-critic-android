@@ -96,7 +96,9 @@ artifacts {
 }
 
 // ---------------------------------------------------------------------------
-// Maven publishing (Maven Central via Sonatype OSSRH)
+// Maven publishing
+// - MavenCentral: Sonatype OSSRH (requires GPG signing)
+// - S3Maven: self-hosted S3 repo at repo.inventiv.io (no signing required)
 // ---------------------------------------------------------------------------
 
 val libVersion: String = project.findProperty("VERSION_NAME") as String? ?: "2.0.0"
@@ -162,6 +164,13 @@ afterEvaluate {
                     password = System.getenv("OSSRH_PASSWORD")
                         ?: project.findProperty("ossrhPassword") as String?
                 }
+            }
+
+            // Local directory repository — contents are synced to S3 (repo.inventiv.io) by
+            // the release workflow. No credentials or GPG signing required.
+            maven {
+                name = "S3Maven"
+                url = uri(rootProject.layout.buildDirectory.get().asFile.resolve("repo"))
             }
         }
     }
