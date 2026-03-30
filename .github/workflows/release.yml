@@ -54,12 +54,6 @@ jobs:
           echo "path=$AAR" >> "$GITHUB_OUTPUT"
           echo "name=$(basename "$AAR")" >> "$GITHUB_OUTPUT"
 
-      - name: Build sources JAR
-        run: gradle :library:sourcesJar
-
-      - name: Build javadoc JAR
-        run: gradle :library:javadocJar
-
       # -----------------------------------------------------------------------
       # Extract changelog notes for this release
       # -----------------------------------------------------------------------
