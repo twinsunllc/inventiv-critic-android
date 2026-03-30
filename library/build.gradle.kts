@@ -106,6 +106,11 @@ val libGroup: String = project.findProperty("GROUP") as String? ?: "io.inventiv.
 val libArtifactId: String = project.findProperty("POM_ARTIFACT_ID") as String? ?: "inventiv-critic-android"
 
 afterEvaluate {
+    tasks.withType<GenerateModuleMetadata> {
+        dependsOn(tasks.named("sourcesJar"))
+        dependsOn(tasks.named("javadocJar"))
+    }
+
     publishing {
         publications {
             create<MavenPublication>("release") {
