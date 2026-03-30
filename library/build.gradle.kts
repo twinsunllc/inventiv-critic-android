@@ -100,8 +100,8 @@ artifacts {
 // ---------------------------------------------------------------------------
 
 val libVersion: String = project.findProperty("VERSION_NAME") as String? ?: "2.0.0"
-val libGroup: String = project.findProperty("GROUP") as String? ?: "io.inventiv.critic.android"
-val libArtifactId: String = project.findProperty("POM_ARTIFACT_ID") as String? ?: "critic-android"
+val libGroup: String = project.findProperty("GROUP") as String? ?: "io.inventiv.critic"
+val libArtifactId: String = project.findProperty("POM_ARTIFACT_ID") as String? ?: "inventiv-critic-android"
 
 afterEvaluate {
     publishing {
