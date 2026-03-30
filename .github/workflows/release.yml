@@ -122,7 +122,7 @@ jobs:
       # and GPG_SIGNING_PASSWORD to be configured as repository secrets.
       # -----------------------------------------------------------------------
       - name: Publish to Maven Central
-        if: env.OSSRH_USERNAME != ''
+        if: env.OSSRH_USERNAME != '' && env.OSSRH_PASSWORD != '' && env.GPG_SIGNING_KEY != ''
         run: gradle :library:publishReleasePublicationToMavenCentralRepository
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
@@ -137,6 +137,7 @@ jobs:
       # No GPG signing is required for this self-hosted S3 repo.
       # -----------------------------------------------------------------------
       - name: Publish to local Maven repo directory
+        if: env.AWS_ACCESS_KEY_ID != ''
         run: gradle :library:publishReleasePublicationToS3MavenRepository
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
