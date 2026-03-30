@@ -21,12 +21,12 @@ import java.net.URL
  * or when the server is not reachable.
  *
  * Configuration (via environment variables or system properties):
- *   CRITIC_BASE_URL  - e.g. https://your-critic-instance.example.com/api/v3/
+ *   CRITIC_BASE_URL  - Host only, e.g. https://critic.inventiv.io (no trailing path)
  *   CRITIC_API_TOKEN - e.g. your-api-token
  *
  * Run manually:
  *   ./gradlew :library:test --tests "*.CriticApiLiveTest" \
- *       -DCRITIC_BASE_URL=https://your-critic-instance.example.com/api/v3/ \
+ *       -DCRITIC_BASE_URL=https://critic.inventiv.io \
  *       -DCRITIC_API_TOKEN=your-api-token
  */
 class CriticApiLiveTest {

@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
     private fun onInitialize() {
         hideKeyboard()
         val apiToken = binding.editApiToken.text?.toString()?.trim().orEmpty()
-        val baseUrl = binding.editBaseUrl.text?.toString()?.trim().orEmpty()
+        val host = binding.editBaseUrl.text?.toString()?.trim().orEmpty()
 
         if (apiToken.isBlank()) {
             appendStatus("Error: API token is required.")
@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
             Critic.initialize(
                 context = application,
                 apiToken = apiToken,
-                baseUrl = baseUrl.ifBlank { null },
+                host = host.ifBlank { null },
             )
             appendStatus("Critic.initialize() called successfully. Ping is running in the background.")
             binding.btnSubmitReport.isEnabled = true

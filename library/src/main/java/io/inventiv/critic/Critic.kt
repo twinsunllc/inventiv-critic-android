@@ -63,7 +63,15 @@ object Critic {
     val isInitialized: Boolean
         get() = apiToken != null
 
-    fun initialize(context: Application, apiToken: String, baseUrl: String? = null) {
+    /**
+     * Initialize Critic.
+     *
+     * @param context  The Application instance.
+     * @param apiToken Your organization's API token from the Critic dashboard.
+     * @param host     Optional server host (scheme + host only, e.g. "https://critic.inventiv.io").
+     *                 The SDK appends the API path internally. Defaults to production.
+     */
+    fun initialize(context: Application, apiToken: String, host: String? = null) {
         require(apiToken.isNotBlank()) {
             "You need to provide an API token. See the Critic Getting Started Guide at https://inventiv.io/critic/"
         }
@@ -79,8 +87,8 @@ object Critic {
         this.application = context
         this.apiToken = apiToken
 
-        if (baseUrl != null) {
-            ApiClient.configure(baseUrl)
+        if (host != null) {
+            ApiClient.configure(host)
         }
 
         context.registerActivityLifecycleCallbacks(lifecycleTracker)
