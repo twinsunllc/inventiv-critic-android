@@ -79,7 +79,7 @@ jobs:
 
   package-age-check:
     name: Maven Central Package Age Check
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  # v6.0.1
@@ -90,6 +90,25 @@ jobs:
           QUARANTINE_DAYS=7
           NOW=$(date +%s)
           FAILED=0
+
+          # --- Load quarantine allowlist ---
+          ALLOWLIST_FILE=".github/quarantine-allowlist.yml"
+          is_allowlisted() {
+            local pkg="$1" ver="$2"
+            if [ ! -f "$ALLOWLIST_FILE" ]; then return 1; fi
+            python3 -c "
+          import yaml, sys, datetime
+          with open('$ALLOWLIST_FILE') as f:
+              data = yaml.safe_load(f) or {}
+          for entry in data.get('packages', []):
+              exp = entry.get('expires') or ''
+              if isinstance(exp, datetime.date):
+                  exp = exp.isoformat()
+              if entry.get('name') == sys.argv[1] and entry.get('version') == sys.argv[2] and exp >= datetime.date.today().isoformat():
+                  sys.exit(0)
+          sys.exit(1)
+          " "$pkg" "$ver" 2>/dev/null
+          }
 
           # Extract dependencies from build.gradle.kts / build.gradle files.
           # NOTE: This does not parse Gradle version catalogs (libs.versions.toml).
@@ -105,6 +124,11 @@ jobs:
             GROUP=$(echo "$DEP" | cut -d: -f1)
             ARTIFACT=$(echo "$DEP" | cut -d: -f2)
             VERSION=$(echo "$DEP" | cut -d: -f3)
+
+            if is_allowlisted "$GROUP:$ARTIFACT" "$VERSION"; then
+              echo "  ⊘ ALLOWLISTED: $GROUP:$ARTIFACT:$VERSION (skipping age check)"
+              continue
+            fi
 
             # Use Maven Central search API for timestamp
             SEARCH_URL="https://search.maven.org/solrsearch/select?q=g:${GROUP}+AND+a:${ARTIFACT}+AND+v:${VERSION}&rows=1&wt=json"
