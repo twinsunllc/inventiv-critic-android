@@ -1,6 +1,6 @@
 # Inventiv Critic Android Library
 
-Use this library to add [Inventiv Critic](https://inventiv.io/critic/) to your Android app.
+Use this library to add [Inventiv Critic](https://critictracking.com) to your Android app.
 
 ![Critic Android default feedback screen](https://assets.inventiv.io/github/inventiv-critic-android/critic-android-half-shot-feedback-screen.png)
 

@@ -73,7 +73,7 @@ object Critic {
      */
     fun initialize(context: Application, apiToken: String, host: String? = null) {
         require(apiToken.isNotBlank()) {
-            "You need to provide an API token. See the Critic Getting Started Guide at https://inventiv.io/critic/"
+            "You need to provide an API token. See the Critic Getting Started Guide at https://critictracking.com"
         }
         require(apiToken != "YOUR_PRODUCT_ACCESS_TOKEN") {
             "Your API token is invalid. Please use a valid one."
