@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.1] - 2026-04-09
+
+### Changed
+
+- Updated documentation URLs from `inventiv.io/critic` to `critictracking.com` in the missing API token error message and README.
+
 ## [2.0.0] - 2026-03-30
 
 ### Breaking Changes
