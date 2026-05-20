@@ -96,19 +96,18 @@ jobs:
       # Create GitHub Release and attach artifacts
       # -----------------------------------------------------------------------
       - name: Create GitHub Release
-        id: gh_release
-        uses: softprops/action-gh-release@da05d552573ad5aba039eaac05058a918a7bf631  # v2.3.2
-        with:
-          tag_name: ${{ steps.changelog.outputs.tag }}
-          name: "Critic Android SDK ${{ steps.changelog.outputs.version }}"
-          body: ${{ steps.changelog.outputs.notes }}
-          draft: false
-          prerelease: false
-          files: |
-            ${{ steps.aar.outputs.path }}
-            library/build/libs/*.jar
+        shell: bash
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NOTES: ${{ steps.changelog.outputs.notes }}
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          FILES=("${{ steps.aar.outputs.path }}" library/build/libs/*.jar)
+          gh release create "${{ steps.changelog.outputs.tag }}" \
+            --title "Critic Android SDK ${{ steps.changelog.outputs.version }}" \
+            --notes "$NOTES" \
+            "${FILES[@]}"
 
       # -----------------------------------------------------------------------
       # Publish to Maven Central (Sonatype OSSRH)
