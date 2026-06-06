@@ -57,11 +57,20 @@ jobs:
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  # v6.0.1
       - name: Run OWASP Dependency-Check
-        uses: dependency-check/Dependency-Check_Action@75ba02d6183445fe0761d26e836bde58b1560600  # v1.1.0
+        # Pinned to the dependency-check action's main line instead of the v1.1.0 tag.
+        # v1.1.0's action.yml only exposes an `others` input that is forwarded to the
+        # scanner as a single, unsplit argument (its image entrypoint is exec-form, so
+        # no shell word-splitting occurs). It does NOT recognize the `args` input at all,
+        # which means the flags below were previously dropped silently -- the CVSS gate
+        # never actually ran and the CentralAnalyzer could not be disabled. The main line
+        # exposes `args` and word-splits it in its entrypoint, so all three flags below
+        # take effect. There is no newer tagged release that supports multi-flag args.
+        uses: dependency-check/Dependency-Check_Action@1e54355a8b4c8abaa8cc7d0b70aa655a3bb15a6c  # main @ 2025-12-10
         with:
           project: inventiv-critic-android
           path: .
           format: HTML
+          out: reports
           # --disableCentral works around search.maven.org returning HTTP 403 to the
           # OWASP CentralAnalyzer SHA1 identification lookups, which aborted the scan
           # ("Finally failed connecting to Central search"). This is an infra workaround,
