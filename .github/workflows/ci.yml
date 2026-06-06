@@ -62,8 +62,14 @@ jobs:
           project: inventiv-critic-android
           path: .
           format: HTML
+          # --disableCentral works around search.maven.org returning HTTP 403 to the
+          # OWASP CentralAnalyzer SHA1 identification lookups, which aborted the scan
+          # ("Finally failed connecting to Central search"). This is an infra workaround,
+          # NOT a relaxation of the security gate: --failOnCVSS 7 below still fails the
+          # job on any dependency with a CVSS score >= 7, using the bundled NVD data.
           args: >-
             --enableExperimental
+            --disableCentral
             --failOnCVSS 7
       - name: Upload report
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f  # v6.0.0
